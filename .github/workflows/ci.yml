@@ -75,4 +75,6 @@ jobs:
       - name: verify the schema matches the models
         # Comparing the migrated schema against the model metadata catches a
         # model edited without a matching migration.
-        run: python scripts/check_no_drift.py
+        # PYTHONPATH=. because running a file inside scripts/ puts that
+        # directory on sys.path instead of the project root.
+        run: PYTHONPATH=. python scripts/check_no_drift.py
