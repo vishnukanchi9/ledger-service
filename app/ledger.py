@@ -106,7 +106,23 @@ def execute_transfer(
         reference=reference,
     )
     session.add(transaction)
-    session.flush()  # assign transaction.id before the entries reference it
+    try:
+        # This flush is what inserts the transaction row, so it is where the
+        # unique index on idempotency_key actually arbitrates. Two concurrent
+        # requests can both pass the lookup above; only one survives here.
+        session.flush()
+    except IntegrityError as exc:
+        session.rollback()
+        replayed = session.scalar(
+            select(Transaction).where(Transaction.idempotency_key == idempotency_key)
+        )
+        if replayed is None:
+            raise
+        if replayed.request_hash != digest:
+            raise IdempotencyConflict(
+                "idempotency key was already used with different transfer parameters"
+            ) from exc
+        return replayed, False
 
     session.add_all(
         [
@@ -128,23 +144,10 @@ def execute_transfer(
     source.balance_minor -= amount_minor
     dest.balance_minor += amount_minor
 
-    try:
-        session.flush()
-    except IntegrityError as exc:
-        session.rollback()
-        # Two concurrent requests carrying the same key: one wins the unique
-        # index, the loser lands here. Re-read and return the winner's work
-        # rather than surfacing a database error to a client that did nothing
-        # wrong.
-        replayed = session.scalar(
-            select(Transaction).where(Transaction.idempotency_key == idempotency_key)
-        )
-        if replayed is not None:
-            if replayed.request_hash != digest:
-                raise IdempotencyConflict(
-                    "idempotency key was already used with different transfer parameters"
-                ) from exc
-            return replayed, False
-        raise
+    # Deliberately unguarded. The balance was checked under the row lock, so the
+    # no-overdraft CHECK constraint cannot fire here unless that logic is wrong -
+    # and if it is, a 500 is the honest answer. Swallowing it would let the bug
+    # hide behind a plausible-looking error response.
+    session.flush()
 
     return transaction, True

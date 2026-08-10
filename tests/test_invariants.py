@@ -61,7 +61,7 @@ def test_database_rejects_an_overdraft_even_if_the_service_is_bypassed(client, m
     validation, and the database still refuses.
     """
     import pytest
-    from sqlalchemy.exc import IntegrityError
+    from sqlalchemy.exc import DBAPIError
 
     from app.db import SessionLocal
 
@@ -70,8 +70,13 @@ def test_database_rejects_an_overdraft_even_if_the_service_is_bypassed(client, m
     with SessionLocal() as session:
         account = session.get(Account, uuid.UUID(acct["id"]))
         account.balance_minor = -1
-        with pytest.raises(IntegrityError):
+        # DBAPIError rather than IntegrityError: drivers disagree on which
+        # subclass a CHECK violation maps to (pg8000 raises ProgrammingError,
+        # psycopg raises IntegrityError). Asserting on the constraint name keeps
+        # the test precise without pinning it to one driver's taxonomy.
+        with pytest.raises(DBAPIError) as excinfo:
             session.commit()
+        assert "ck_accounts_no_overdraft" in str(excinfo.value)
 
 
 def test_entries_are_never_orphaned(client, funded, make_account):
