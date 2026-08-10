@@ -1,0 +1,78 @@
+name: ci
+
+# Tests run against a real PostgreSQL container. SQLite would be faster and
+# would prove nothing: row locking, unique-violation races, and CHECK
+# constraints are exactly what is under test here.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DATABASE_URL: postgresql+pg8000://ledger:ledger@localhost:5432/ledger
+  API_KEY: test-key
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ledger
+          POSTGRES_PASSWORD: ledger
+          POSTGRES_DB: ledger
+        ports:
+          - 5432:5432
+        # Without this the job races the database: the runner starts the step
+        # while Postgres is still initialising and the first connection fails.
+        options: >-
+          --health-cmd "pg_isready -U ledger"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: install
+        run: pip install -r requirements-dev.txt
+
+      - name: lint
+        run: ruff check app tests
+
+      - name: apply migrations
+        # Run explicitly as its own step so a broken migration fails with a
+        # clear message rather than inside a fixture.
+        run: alembic upgrade head
+
+      - name: verify migrations are reversible
+        # A downgrade path that was never executed is a downgrade path that
+        # does not work.
+        run: |
+          alembic downgrade base
+          alembic upgrade head
+
+      - name: tests
+        run: pytest -v --tb=short
+
+      - name: verify the schema matches the models
+        # Comparing the migrated schema against the model metadata catches a
+        # model edited without a matching migration.
+        run: python scripts/check_no_drift.py
