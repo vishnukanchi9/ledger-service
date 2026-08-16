@@ -1,5 +1,7 @@
 # Ledger Service
 
+[![CI](https://github.com/vishnukanchi9/ledger-service/actions/workflows/ci.yml/badge.svg)](https://github.com/vishnukanchi9/ledger-service/actions/workflows/ci.yml)
+
 A double-entry ledger API where the hard part — **staying correct under
 concurrency** — is proven by the test suite rather than asserted in the README.
 
