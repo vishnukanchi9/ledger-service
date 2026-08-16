@@ -38,12 +38,15 @@ the unique index, not the lookup.
 | `POST` | `/transfers` | Requires `Idempotency-Key`. **201** applied, **200** replayed |
 | `GET` | `/healthz` | Returns `{"status":"ok"}` when the service is running |
 
-All endpoints require `X-API-Key` and are rate limited per key.
+Account and transfer endpoints require `X-API-Key` and are rate limited per key.
+`/healthz` and the console at `/` are deliberately open: a health check that needs
+a credential is useless to a load balancer, and the console prompts for the key itself.
 
 ```bash
 curl -X POST localhost:8000/transfers \
   -H "X-API-Key: $API_KEY" \
   -H "Idempotency-Key: $(uuidgen)" \
+  -H "Content-Type: application/json" \
   -d '{"source_account_id":"...","destination_account_id":"...","amount_minor":2500}'
 ```
 
