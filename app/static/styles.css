@@ -1,0 +1,50 @@
+:root { --ink: #172033; --muted: #667085; --line: #d9e1ec; --surface: #fff; --canvas: #f4f7fb; --brand: #3159d8; --brand-dark: #1d3fa9; --positive: #15805b; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; color: var(--ink); background: var(--canvas); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.site-header, main { max-width: 1160px; margin: auto; }
+.site-header { min-height: 136px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 2rem; }
+main { padding: 0 2rem 3.5rem; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.05em; }
+h2 { margin-bottom: .4rem; letter-spacing: -.03em; }
+.eyebrow { margin-bottom: .45rem; color: var(--brand); font-size: .73rem; font-weight: 800; letter-spacing: .12em; }
+.api-key-panel, .panel, .account-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 7px 24px rgb(24 38 73 / .05); }
+.api-key-panel { display: flex; justify-content: space-between; gap: 2rem; padding: 1.5rem; align-items: center; }
+.api-key-panel p:not(.eyebrow), .panel-copy, .empty-state { color: var(--muted); line-height: 1.55; }
+.key-form { min-width: min(100%, 390px); }
+label { display: grid; gap: .45rem; font-size: .86rem; font-weight: 700; }
+.inline-form { display: flex; gap: .6rem; }
+input, select { width: 100%; border: 1px solid #b9c5d5; border-radius: 8px; padding: .72rem .8rem; color: var(--ink); background: #fff; font: inherit; }
+input:focus, select:focus { outline: 3px solid rgb(49 89 216 / .18); border-color: var(--brand); }
+.button { border: 0; border-radius: 8px; background: var(--brand); color: #fff; cursor: pointer; padding: .75rem 1rem; font: inherit; font-weight: 750; white-space: nowrap; }
+.button:hover { background: var(--brand-dark); }
+.button-secondary { color: var(--brand); background: #e8edff; }
+.button-secondary:hover { color: #fff; }
+.notice { min-height: 1.5rem; margin: 1rem 0 0; font-size: .9rem; color: var(--positive); font-weight: 650; }
+.notice.error { color: #bf2848; }
+.overview { margin-top: 2.7rem; }
+.section-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+.account-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+.account-card { padding: 1.2rem; }
+.account-card p { margin-bottom: .8rem; color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .1em; }
+.account-card h3 { margin-bottom: .25rem; }
+.account-card strong { display: block; color: var(--positive); font-size: 1.35rem; }
+.account-card span { color: var(--muted); font-size: .78rem; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2.7rem; }
+.panel { padding: 1.5rem; }
+.stacked-form { display: grid; gap: 1rem; margin-top: 1.25rem; }
+.activity-picker { margin: 1.25rem 0 .75rem; }
+.entries { max-height: 340px; overflow: auto; }
+.entry { display: flex; justify-content: space-between; gap: 1rem; padding: .85rem 0; border-top: 1px solid var(--line); }
+.entry strong, .entry span, .entry time { display: block; }
+.entry strong { color: var(--positive); }
+.entry span, .entry time { margin-top: .2rem; color: var(--muted); font-size: .78rem; }
+.entry time { text-align: right; }
+dialog { width: min(92vw, 440px); border: 0; border-radius: 16px; box-shadow: 0 20px 80px rgb(14 25 49 / .3); padding: 1.5rem; }
+dialog::backdrop { background: rgb(8 15 35 / .46); }
+.dialog-heading { display: flex; justify-content: space-between; align-items: start; }
+.dialog-heading h2 { margin: 0; }
+.icon-button { border: 0; background: transparent; cursor: pointer; font-size: 1.7rem; line-height: 1; }
+.checkbox-label { grid-template-columns: 1rem 1fr; align-items: center; }
+.checkbox-label input { width: 1rem; }
+@media (max-width: 700px) { .site-header, .api-key-panel, .workspace { display: grid; } .site-header, main { padding-left: 1rem; padding-right: 1rem; } .api-key-panel { gap: 1rem; } .key-form { min-width: 0; } .inline-form { display: grid; } .entry { display: grid; } .entry time { text-align: left; } }

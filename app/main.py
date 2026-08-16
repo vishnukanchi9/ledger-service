@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import Depends, FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.auth import require_api_key
 from app.config import get_settings
@@ -15,6 +18,8 @@ app = FastAPI(
     version="1.0.0",
     description="Double-entry ledger with idempotent transfers.",
 )
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 async def rate_limit(api_key: str = Depends(require_api_key)) -> None:
@@ -33,6 +38,12 @@ async def ledger_error_handler(_: Request, exc: LedgerError) -> JSONResponse:
 @app.get("/healthz", tags=["ops"])
 async def healthz() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/", include_in_schema=False)
+async def console() -> FileResponse:
+    """A same-origin demo console for the ledger API."""
+    return FileResponse(static_dir / "index.html")
 
 
 # Auth and the rate limiter are router-level dependencies, so a new endpoint is

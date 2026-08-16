@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A double-entry ledger console." />
+    <title>Ledger Console</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div><p class="eyebrow">DOUBLE-ENTRY LEDGER</p><h1>Ledger Console</h1></div>
+      <button id="refresh-button" class="button button-secondary" type="button">Refresh data</button>
+    </header>
+    <main>
+      <section class="api-key-panel" aria-labelledby="connection-title">
+        <div><p class="eyebrow">LOCAL CONNECTION</p><h2 id="connection-title">Connect to the API</h2><p>Enter the ledger API key. It stays only in this browser session and is never written to the database.</p></div>
+        <form id="api-key-form" class="key-form"><label for="api-key">API key</label><div class="inline-form"><input id="api-key" type="password" autocomplete="off" placeholder="dev-key-change-me" required /><button class="button" type="submit">Connect</button></div></form>
+      </section>
+      <p id="notice" class="notice" role="status" aria-live="polite"></p>
+      <section class="overview" aria-labelledby="accounts-heading">
+        <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="accounts-heading">Accounts</h2></div><button id="new-account-button" class="button" type="button">New account</button></div>
+        <div id="accounts" class="account-grid"><p class="empty-state">Connect to load your accounts.</p></div>
+      </section>
+      <section class="workspace" aria-label="Ledger actions">
+        <article class="panel">
+          <p class="eyebrow">MONEY MOVEMENT</p><h2>Post a transfer</h2><p class="panel-copy">Each submission has a unique idempotency key, so a retry can never post twice.</p>
+          <form id="transfer-form" class="stacked-form"><label>From <select id="source-account" required></select></label><label>To <select id="destination-account" required></select></label><label>Amount <input id="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required /></label><label>Reference <input id="reference" maxlength="255" placeholder="Optional note" /></label><button class="button" type="submit">Post transfer</button></form>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">AUDIT TRAIL</p><h2>Account activity</h2><label class="activity-picker">Account <select id="activity-account"></select></label><div id="entries" class="entries"><p class="empty-state">Select an account to view its immutable entries.</p></div>
+        </article>
+      </section>
+    </main>
+    <dialog id="account-dialog"><form id="account-form" class="stacked-form"><div class="dialog-heading"><h2>Create account</h2><button class="icon-button" type="button" id="close-dialog" aria-label="Close">×</button></div><label>Name <input id="account-name" maxlength="120" required placeholder="Operating account" /></label><label>Currency <input id="account-currency" value="USD" maxlength="3" pattern="[A-Za-z]{3}" required /></label><label class="checkbox-label"><input id="allow-negative" type="checkbox" /> This is an external funding account</label><button class="button" type="submit">Create account</button></form></dialog>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

@@ -19,6 +19,12 @@ class DuplicateAccount(LedgerError):
     code = "duplicate_account"
 
 
+@router.get("", response_model=list[AccountOut])
+def list_accounts(session: Session = Depends(get_session)) -> list[Account]:
+    """Return accounts for the console, ordered predictably by creation time."""
+    return list(session.scalars(select(Account).order_by(Account.created_at.desc())))
+
+
 @router.post("", response_model=AccountOut, status_code=status.HTTP_201_CREATED)
 def create_account(payload: AccountCreate, session: Session = Depends(get_session)) -> Account:
     account = Account(

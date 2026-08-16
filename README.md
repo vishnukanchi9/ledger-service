@@ -57,6 +57,14 @@ uvicorn app.main:app --reload
 Interactive docs at `/docs`. Point `DATABASE_URL` at any Postgres if you'd
 rather not use compose.
 
+## Ledger Console
+
+Open `http://localhost:8000/` after starting the API for a same-origin browser
+client. It creates accounts, posts idempotent transfers, and reads immutable
+entry history through the public API. For local development, connect using the
+configured `API_KEY` (the default is `dev-key-change-me`). The key is stored in
+the browser session only, never persisted by the console.
+
 ---
 
 ## Design decisions
