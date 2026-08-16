@@ -31,10 +31,10 @@ the unique index, not the lookup.
 |---|---|---|
 | `GET` | `/accounts` | Lists accounts for the Ledger Console |
 | `POST` | `/accounts` | 409 on duplicate name |
-| `GET` | `/accounts/{id}` | |
+| `GET` | `/accounts/{id}` | Retrieves one account and its current balance |
 | `GET` | `/accounts/{id}/entries` | Keyset pagination via `?before=&limit=` |
 | `POST` | `/transfers` | Requires `Idempotency-Key`. **201** applied, **200** replayed |
-| `GET` | `/healthz` | |
+| `GET` | `/healthz` | Returns `{"status":"ok"}` when the service is running |
 
 All endpoints require `X-API-Key` and are rate limited per key.
 
