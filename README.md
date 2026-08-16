@@ -29,6 +29,7 @@ the unique index, not the lookup.
 
 | Method | Path | Notes |
 |---|---|---|
+| `GET` | `/accounts` | Lists accounts for the Ledger Console |
 | `POST` | `/accounts` | 409 on duplicate name |
 | `GET` | `/accounts/{id}` | |
 | `GET` | `/accounts/{id}/entries` | Keyset pagination via `?before=&limit=` |
